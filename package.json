@@ -1,0 +1,19 @@
+{
+  "name": "c4-model-visualizer-core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Myhaylyak/c4-model-visualizer-core.git"
+  },
+  "author": "Yura Mikhaylyak <ghost86421@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Myhaylyak/c4-model-visualizer-core/issues"
+  },
+  "homepage": "https://github.com/Myhaylyak/c4-model-visualizer-core#readme"
+}
