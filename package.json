@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/Myhaylyak/c4-model-visualizer-core/issues"
   },
-  "homepage": "https://github.com/Myhaylyak/c4-model-visualizer-core#readme"
+  "homepage": "https://github.com/Myhaylyak/c4-model-visualizer-core#readme",
+  "dependencies": {
+    "cytoscape": "^3.14.0",
+    "cytoscape-dagre": "^2.2.2"
+  }
 }
