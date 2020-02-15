@@ -53,7 +53,7 @@ class DiagramVisualizer {
         const hasChild = Boolean(nodeContextKey);
 
         if (hasChild && visibleNode) {
-          groups = this.computeElements(node[nodeContextKey], key, level + 1, selectionId);
+          groups = this.computeElements(node[nodeContextKey], key, level + 1, selectedPath, selectionId);
         }
 
         return acc
