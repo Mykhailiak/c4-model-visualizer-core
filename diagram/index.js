@@ -26,9 +26,10 @@ class DiagramVisualizer {
     this.cy.on('click', 'node', onClick);
   }
 
-  update(context, selectedPath) {
+  update(context, selectedPath, selectedLevel) {
     this.cy.json({ elements: this.computeElements(context, selectedPath) });
     this.cy.ready(() => this.cy.layout(this.layout).run());
+    this.fitViewport(selectedLevel);
   }
 
   fitViewport(selectedLevel) {
