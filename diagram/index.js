@@ -26,8 +26,8 @@ class DiagramVisualizer {
     this.cy.on('click', 'node', onClick);
   }
 
-  update(elements) {
-    this.cy.json({ elements });
+  update(context, selectedPath) {
+    this.cy.json({ elements: this.computeElements(context, selectedPath) });
     this.cy.ready(() => this.cy.layout(this.layout).run());
   }
 
@@ -37,7 +37,7 @@ class DiagramVisualizer {
     }
   }
 
-  computeElements(context = {}, parent, level = 0, selectedPath, selectionPath = this.levels[0]) {
+  computeElements(context = {}, selectedPath, level = 0, parent, selectionPath = this.levels[0]) {
     const keys = Object.keys(context);
 
     return keys
@@ -53,7 +53,7 @@ class DiagramVisualizer {
         const hasChild = Boolean(nodeContextKey);
 
         if (hasChild && visibleNode) {
-          groups = this.computeElements(node[nodeContextKey], key, level + 1, selectedPath, selectionId);
+          groups = this.computeElements(node[nodeContextKey], selectedPath, level + 1, key, selectionId);
         }
 
         return acc
