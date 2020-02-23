@@ -33,7 +33,7 @@ declare class DiagramVisualizer {
     level: number,
     parent: string,
     selectionPath: string
-  ): Array<Element  >
+  ): Array<Element>
 }
 
 export default DiagramVisualizer
