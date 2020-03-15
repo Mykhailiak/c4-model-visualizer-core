@@ -6,12 +6,7 @@ const EMPTY_STRING = '';
  * @param {string} input
  * @returns {boolean}
  */
-export const validate = (input) => (
-  [
-    input,
-    input.includes(':'),
-  ].every(Boolean)
-);
+const validate = (input) => [input, input.includes(':')].every(Boolean);
 
 /**
  * Parse YAML into JSON
@@ -19,7 +14,7 @@ export const validate = (input) => (
  * @param {string} [input=EMPTY_STRING]
  * @returns {object}
  */
-export const parse = (input = EMPTY_STRING) => {
+const parse = (input = EMPTY_STRING) => {
   try {
     if (!validate(input)) {
       throw new Error('Invalid value');
@@ -44,10 +39,13 @@ export const parse = (input = EMPTY_STRING) => {
 
       if (!value) {
         const childElements = parts.slice(index + 1);
-        const initialChildsBarrier = childElements.findIndex((e) => /^\S/.test(e));
-        const computedChildElementsBarrier = initialChildsBarrier === -1
-          ? childElements.length
-          : initialChildsBarrier;
+        const initialChildsBarrier = childElements.findIndex((e) =>
+          /^\S/.test(e),
+        );
+        const computedChildElementsBarrier =
+          initialChildsBarrier === -1
+            ? childElements.length
+            : initialChildsBarrier;
 
         accumulator[key] = parse(
           childElements
@@ -73,12 +71,19 @@ export const parse = (input = EMPTY_STRING) => {
  * @param {...any}
  * @returns {promise}
  */
-export const parseAsync = (...args) => new Promise((resolve, reject) => {
-  try {
-    const data = parse(...args);
+const parseAsync = (...args) =>
+  new Promise((resolve, reject) => {
+    try {
+      const data = parse(...args);
 
-    resolve(data);
-  } catch (e) {
-    reject(e);
-  }
-});
+      resolve(data);
+    } catch (e) {
+      reject(e);
+    }
+  });
+
+module.exports = {
+  validate,
+  parse,
+  parseAsync,
+};
