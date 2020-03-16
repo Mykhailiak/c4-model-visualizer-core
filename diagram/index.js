@@ -1,6 +1,6 @@
-import cytoscape from "cytoscape";
-import dagre from "cytoscape-dagre";
-import style from "./styles";
+import cytoscape from 'cytoscape';
+import dagre from 'cytoscape-dagre';
+import style from './styles';
 
 cytoscape.use(dagre);
 
@@ -8,11 +8,11 @@ class DiagramVisualizer {
   constructor(
     levels,
     getSuitableLevelKey,
-    { containerId, onClick, ...config }
+    { containerId, onClick, ...config },
   ) {
     this.levels = levels;
     this.getSuitableLevelKey = getSuitableLevelKey;
-    this.layout = { name: "dagre" };
+    this.layout = { name: 'dagre' };
     this.cy = cytoscape({
       style,
       maxZoom: 6,
@@ -27,7 +27,7 @@ class DiagramVisualizer {
       ...config,
     });
 
-    this.cy.on("click", "node", onClick);
+    this.cy.on('click', 'node', onClick);
   }
 
   update(context, selectedPath, selectedLevel) {
@@ -50,7 +50,7 @@ class DiagramVisualizer {
     level = 0,
     parent,
     selectionPath = this.levels[0],
-    parentKeys = []
+    parentKeys = [],
   ) {
     const keys = Object.keys(context);
     const availableKeys = parentKeys.concat(keys);
@@ -74,7 +74,7 @@ class DiagramVisualizer {
           level + 1,
           key,
           selectionId,
-          availableKeys
+          availableKeys,
         );
       }
 
@@ -85,20 +85,20 @@ class DiagramVisualizer {
             parent,
             hasChild,
             selectionId,
-            id: key
-          }
+            id: key,
+          },
         })
         .concat(
           validEdge
-            ? Object.keys(targetsSource).map(target => ({
+            ? Object.keys(targetsSource).map((target) => ({
                 data: {
                   target,
                   id: `${key}_${target}`,
                   source: key,
-                  name: targetsSource[target]
-                }
+                  name: targetsSource[target],
+                },
               }))
-            : []
+            : [],
         )
         .concat(groups);
     }, []);
