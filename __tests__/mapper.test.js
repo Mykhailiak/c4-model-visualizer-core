@@ -82,7 +82,7 @@ it('should create map by context level (nested type)', () => {
   expect(createHighLevelMap(inputSecondOption)).toEqual(result);
 });
 
-it('should create map by chosen level', () => {
+it('should create map by chosen level from source', () => {
   const input = {
     'order-support-system': {
       name: 'Name',
@@ -147,4 +147,71 @@ it('should create map by chosen level', () => {
   expect(
     createHighLevelMap(inputSecondOption, null, null, secondSelectedEntity),
   ).toEqual(secondResult);
+});
+
+fit('should create map by chosen level to destination', () => {
+  const input = {
+    'order-support-system': {
+      name: 'Name',
+      container: {
+        'order-support-system-foo': {
+          name: 'Foo',
+        },
+      },
+    },
+    'order-processing-system': {
+      name: 'Order processing',
+      container: {
+        'back-end': {
+          name: 'Application Back-end part',
+          relations: {
+            to: {
+              'order-support-system-foo': 'posts Orders',
+            },
+          },
+        },
+      },
+    },
+  };
+  const inputSecondOption = {
+    'order-support-system': {
+      name: 'Name',
+      container: {
+        'order-support-system-foo': {
+          name: 'Foo',
+          component: {
+            'order-support-system-foo2': {
+              name: 'Foo2',
+            },
+          },
+        },
+      },
+    },
+    'order-processing-system': {
+      name: 'Order processing',
+      container: {
+        'back-end': {
+          name: 'Application Back-end part',
+          relations: {
+            to: {
+              'order-support-system-foo2': 'posts Orders',
+            },
+          },
+        },
+      },
+    },
+  };
+  const selectedEntity = 'order-support-system';
+  const secondSelectedEntity = 'order-support-system-foo';
+  const result = {
+    'order-processing-system': ['order-support-system-foo'],
+  };
+  const secondResult = {
+    'order-processing-system': ['order-support-system-foo2'],
+  };
+
+  expect(createHighLevelMap(input, null, null, selectedEntity)).toEqual(result);
+  // expect(
+  //   createHighLevelMap(inputSecondOption, null, null, secondSelectedEntity),
+  // ).toEqual(secondResult);
 });
