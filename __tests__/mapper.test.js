@@ -149,7 +149,7 @@ it('should create map by chosen level from source', () => {
   ).toEqual(secondResult);
 });
 
-fit('should create map by chosen level to destination', () => {
+it('should create map by chosen level to destination', () => {
   const input = {
     'order-support-system': {
       name: 'Name',
@@ -211,7 +211,7 @@ fit('should create map by chosen level to destination', () => {
   };
 
   expect(createHighLevelMap(input, null, null, selectedEntity)).toEqual(result);
-  // expect(
-  //   createHighLevelMap(inputSecondOption, null, null, secondSelectedEntity),
-  // ).toEqual(secondResult);
+  expect(
+    createHighLevelMap(inputSecondOption, null, null, secondSelectedEntity),
+  ).toEqual(secondResult);
 });

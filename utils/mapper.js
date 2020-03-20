@@ -1,9 +1,9 @@
 const innerLevels = ['container', 'component', 'class'];
 
-const findParentEntity = (entity, lookingKey, parent) => {
+const findParentEntity = (entity, lookingKey, parent, selectedEntity) => {
   return Object.entries(entity).reduce((acc, [key, entity]) => {
     const existOnContextLevel = key === lookingKey;
-    const computedKey = parent || key;
+    const computedKey = key === selectedEntity ? null : parent || key;
 
     if (existOnContextLevel) {
       return computedKey;
@@ -11,16 +11,21 @@ const findParentEntity = (entity, lookingKey, parent) => {
 
     const level = innerLevels.find((l) => entity.hasOwnProperty(l));
 
-    if (level) {
-      return findParentEntity(entity[level], lookingKey, computedKey);
+    if (level && acc == null) {
+      return findParentEntity(
+        entity[level],
+        lookingKey,
+        computedKey,
+        selectedEntity,
+      );
     }
 
-    return '';
-  }, '');
+    return acc;
+  }, null);
 };
 
-const findParentEntities = (entries, keys = []) =>
-  keys.map((k) => findParentEntity(entries, k));
+const findParentEntities = (entries, keys = [], selectedEntity) =>
+  keys.map((k) => findParentEntity(entries, k, null, selectedEntity));
 
 export const createHighLevelMap = (
   data = {},
@@ -38,6 +43,7 @@ export const createHighLevelMap = (
       acc[computedKey] = findParentEntities(
         context,
         Object.keys(entity.relations.to),
+        selectedEntity,
       );
 
       return acc;
