@@ -1,22 +1,33 @@
 const innerLevels = ['container', 'component', 'class'];
 
-const findParentEntity = (entity, lookingKey, parent, selectedEntity) => {
-  return Object.entries(entity).reduce((acc, [key, entity]) => {
-    const existOnContextLevel = key === lookingKey;
-    const computedKey = key === selectedEntity ? null : parent || key;
+const getLevelKey = (entity) =>
+  innerLevels.find((l) => entity.hasOwnProperty(l));
 
-    if (existOnContextLevel) {
-      return computedKey;
+const getKeyBySelectedScope = (key, selectedScope, parentKey) =>
+  key === selectedScope ? null : parentKey || key;
+
+const getDestinationByLookingKey = (
+  context,
+  lookingKey,
+  parentKey,
+  selectedScope,
+) => {
+  return Object.entries(context).reduce((acc, [key, entity]) => {
+    const existsOnCurrentLevel = key === lookingKey;
+    const destination = getKeyBySelectedScope(key, selectedScope, parentKey);
+
+    if (existsOnCurrentLevel) {
+      return destination;
     }
 
-    const level = innerLevels.find((l) => entity.hasOwnProperty(l));
+    const levelKey = getLevelKey(entity);
 
-    if (level && acc == null) {
-      return findParentEntity(
-        entity[level],
+    if (levelKey && acc == null) {
+      return getDestinationByLookingKey(
+        entity[levelKey],
         lookingKey,
-        computedKey,
-        selectedEntity,
+        destination,
+        selectedScope,
       );
     }
 
@@ -24,42 +35,37 @@ const findParentEntity = (entity, lookingKey, parent, selectedEntity) => {
   }, null);
 };
 
-const findParentEntities = (entries, keys = [], selectedEntity) =>
-  keys.map((k) => findParentEntity(entries, k, null, selectedEntity));
+const getDestinations = (context, keys = [], selectedScope) =>
+  keys.map((k) => getDestinationByLookingKey(context, k, null, selectedScope));
 
 export const createHighLevelMap = (
-  data = {},
-  key,
+  data,
+  parentKey,
   globalContext,
-  selectedEntity,
+  selectedScope,
 ) => {
   const entries = Object.entries(data);
 
-  return entries.reduce((acc, [id, entity]) => {
-    const computedKey = id === selectedEntity ? null : key || id;
+  return entries.reduce((acc, [key, entity]) => {
+    const source = getKeyBySelectedScope(key, selectedScope, parentKey);
     const context = globalContext || data;
 
     if (entity.relations && entity.relations.to) {
-      acc[computedKey] = findParentEntities(
+      acc[source] = getDestinations(
         context,
         Object.keys(entity.relations.to),
-        selectedEntity,
+        selectedScope,
       );
 
       return acc;
     }
 
-    const levelKey = innerLevels.find((l) => entity.hasOwnProperty(l));
+    const levelKey = getLevelKey(entity);
 
     if (levelKey) {
       return {
         ...acc,
-        ...createHighLevelMap(
-          entity[levelKey],
-          computedKey,
-          context,
-          selectedEntity,
-        ),
+        ...createHighLevelMap(entity[levelKey], source, context, selectedScope),
       };
     }
 

@@ -83,7 +83,7 @@ it('should create map by context level (nested type)', () => {
 
 it('should create map by chosen level from source', () => {
   const selectedEntity = 'order-support-system';
-  const secondSelectedEntity = 'order-support-system-foo';
+  const selectedScope = 'order-support-system-foo';
   const result = {
     'order-support-system-foo': ['order-processing-system'],
   };
@@ -95,7 +95,7 @@ it('should create map by chosen level from source', () => {
     result,
   );
   expect(
-    createHighLevelMap(inputWithComponent, null, null, secondSelectedEntity),
+    createHighLevelMap(inputWithComponent, null, null, selectedScope),
   ).toEqual(secondResult);
 });
 
@@ -152,7 +152,7 @@ it('should create map by chosen level to destination', () => {
     },
   };
   const selectedEntity = 'order-support-system';
-  const secondSelectedEntity = 'order-support-system-foo';
+  const selectedScope = 'order-support-system-foo';
   const result = {
     'order-processing-system': ['order-support-system-foo'],
   };
@@ -162,6 +162,56 @@ it('should create map by chosen level to destination', () => {
 
   expect(createHighLevelMap(input, null, null, selectedEntity)).toEqual(result);
   expect(
-    createHighLevelMap(inputWithComponent, null, null, secondSelectedEntity),
+    createHighLevelMap(inputWithComponent, null, null, selectedScope),
   ).toEqual(secondResult);
+});
+
+it('should create map with multiple destinations', () => {
+  const input = {
+    'order-support-system': {
+      name: 'Name',
+      container: {
+        'order-support-system-foo': {
+          name: 'Foo',
+          component: {
+            'order-support-system-foo2': {
+              name: 'Foo2',
+            },
+            'order-support-system-foo3': {
+              name: 'Foo3',
+              relations: {
+                to: {
+                  'order-processing-system': 'Knows about that',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    'order-processing-system': {
+      name: 'Order processing',
+      container: {
+        'back-end': {
+          name: 'Application Back-end part',
+          relations: {
+            to: {
+              'order-support-system-foo2': 'posts Orders',
+              'order-support-system-foo3': 'Order support system foo',
+            },
+          },
+        },
+      },
+    },
+  };
+  const selectedScope = 'order-support-system-foo';
+  const result = {
+    'order-processing-system': [
+      'order-support-system-foo2',
+      'order-support-system-foo3',
+    ],
+    'order-support-system-foo3': ['order-processing-system'],
+  };
+
+  expect(createHighLevelMap(input, null, null, selectedScope)).toEqual(result);
 });
