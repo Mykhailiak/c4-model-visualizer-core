@@ -1,6 +1,7 @@
 import cytoscape from 'cytoscape';
 import dagre from 'cytoscape-dagre';
 import style from './styles';
+import { createHighLevelMap } from '../utils/mapper';
 
 cytoscape.use(dagre);
 
@@ -30,7 +31,23 @@ class DiagramVisualizer {
     this.cy.on('click', 'node', onClick);
   }
 
+  buildCrossLevelsRelations(data, selectedPath) {
+    return Object.entries(createHighLevelMap(data, null, null, selectedPath)).map(
+      ([key, destinations]) => {
+        return destinations.map((target) => ({
+          data: {
+            target,
+            id: `${key}_${target}`,
+            source: key,
+            // name: 'Name...'
+          },
+        }));
+      },
+    ).flat();
+  }
+
   update(context, selectedPath, selectedLevel) {
+    this.selectedLevel = selectedLevel;
     const elements = this.computeElements(context, selectedPath);
 
     this.cy.json({ elements });
@@ -50,16 +67,13 @@ class DiagramVisualizer {
     level = 0,
     parent,
     selectionPath = this.levels[0],
-    parentKeys = [],
   ) {
     const keys = Object.keys(context);
-    const availableKeys = parentKeys.concat(keys);
 
     return keys.reduce((acc, key) => {
       let groups = [];
       const { relations: { to: targetsSource } = {} } = context[key];
       const validEdge = targetsSource && true;
-      // Object.keys(targetsSource).some(t => availableKeys.includes(t));
       const node = context[key];
       const name = node.name || key;
       const selectionId = `${selectionPath}:${key}`;
@@ -74,7 +88,6 @@ class DiagramVisualizer {
           level + 1,
           key,
           selectionId,
-          availableKeys,
         );
       }
 
@@ -100,6 +113,7 @@ class DiagramVisualizer {
               }))
             : [],
         )
+        .concat(this.buildCrossLevelsRelations(context, this.selectedLevel))
         .concat(groups);
     }, []);
   }
