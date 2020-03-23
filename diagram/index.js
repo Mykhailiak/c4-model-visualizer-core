@@ -31,19 +31,28 @@ class DiagramVisualizer {
     this.cy.on('click', 'node', onClick);
   }
 
-  buildCrossLevelsRelations(data, selectedPath) {
-    return Object.entries(createHighLevelMap(data, null, null, selectedPath)).map(
-      ([key, destinations]) => {
-        return destinations.map((target) => ({
-          data: {
-            target,
-            id: `${key}_${target}`,
-            source: key,
-            // name: 'Name...'
-          },
-        }));
-      },
-    ).flat();
+  buildCrossLevelsRelations(data, selectedLevel, edgesIds) {
+    // TODO: Implement `edgeIds` checks before creating high level map
+    return Object.entries(createHighLevelMap(data, null, null, selectedLevel))
+      .map(([key, destinations]) => {
+        return destinations
+          .map((target) =>
+            !edgesIds.includes(`${key}_${target}`) && key !== target
+              ? {
+                  data: {
+                    target,
+                    id: `${key}_${target}`,
+                    source: key,
+                    name: target ? 'Target is here' : `KEY ${key}; Target: ${target}`,
+                    // TODO: Add labels
+                    // name: 'Name...'
+                  },
+                }
+              : null,
+          )
+          .filter(Boolean);
+      })
+      .flat();
   }
 
   update(context, selectedPath, selectedLevel) {
@@ -90,6 +99,18 @@ class DiagramVisualizer {
           selectionId,
         );
       }
+      const edges = validEdge
+        ? Object.keys(targetsSource).map((target) => ({
+            data: {
+              target,
+              id: `${key}_${target}`,
+              source: key,
+              name: targetsSource[target],
+            },
+          }))
+        : [];
+      // TODO: Implement accumulator. At this point it works like: one key for each call
+      const edgesIds = edges.map((e) => e.data.id);
 
       return acc
         .concat({
@@ -101,19 +122,10 @@ class DiagramVisualizer {
             id: key,
           },
         })
+        .concat(edges)
         .concat(
-          validEdge
-            ? Object.keys(targetsSource).map((target) => ({
-                data: {
-                  target,
-                  id: `${key}_${target}`,
-                  source: key,
-                  name: targetsSource[target],
-                },
-              }))
-            : [],
+          this.buildCrossLevelsRelations(context, this.selectedLevel, edgesIds),
         )
-        .concat(this.buildCrossLevelsRelations(context, this.selectedLevel))
         .concat(groups);
     }, []);
   }

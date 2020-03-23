@@ -13,8 +13,10 @@ const getDestinationByLookingKey = (
   selectedScope,
 ) => {
   return Object.entries(context).reduce((acc, [key, entity]) => {
+    const hasRelationRules = entity.relations && entity.relations.to;
     const existsOnCurrentLevel = key === lookingKey;
-    const destination = getKeyBySelectedScope(key, selectedScope, parentKey);
+    const computedKey = getKeyBySelectedScope(key, selectedScope, parentKey);
+    const destination = hasRelationRules && computedKey == null ? key : computedKey;
 
     if (existsOnCurrentLevel) {
       return destination;
@@ -47,10 +49,12 @@ export const createHighLevelMap = (
   const entries = Object.entries(data);
 
   return entries.reduce((acc, [key, entity]) => {
-    const source = getKeyBySelectedScope(key, selectedScope, parentKey);
+    const hasRelationRules = entity.relations && entity.relations.to;
+    const computedKey = getKeyBySelectedScope(key, selectedScope, parentKey);
+    const source = hasRelationRules && computedKey == null ? key : computedKey;
     const context = globalContext || data;
 
-    if (entity.relations && entity.relations.to) {
+    if (hasRelationRules) {
       acc[source] = getDestinations(
         context,
         Object.keys(entity.relations.to),
