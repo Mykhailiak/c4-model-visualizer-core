@@ -23,7 +23,6 @@ const getDestinationByLookingKey = (
         ? key
         : computedKey;
 
-    // Problem of redundant element is here. Cannot create proper relations between element and focused context (which becomes null)
     if (existsOnCurrentLevel) {
       return destination;
     }
