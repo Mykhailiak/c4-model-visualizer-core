@@ -16,8 +16,14 @@ const getDestinationByLookingKey = (
     const hasRelationRules = entity.relations && entity.relations.to;
     const existsOnCurrentLevel = key === lookingKey;
     const computedKey = getKeyBySelectedScope(key, selectedScope, parentKey);
-    const destination = hasRelationRules && computedKey == null ? key : computedKey;
+    const destination =
+      existsOnCurrentLevel && key === selectedScope
+        ? key
+        : hasRelationRules && computedKey == null
+        ? key
+        : computedKey;
 
+    // Problem of redundant element is here. Cannot create proper relations between element and focused context (which becomes null)
     if (existsOnCurrentLevel) {
       return destination;
     }
