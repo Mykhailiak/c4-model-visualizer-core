@@ -1,7 +1,6 @@
 import cytoscape from 'cytoscape';
 import dagre from 'cytoscape-dagre';
 import style from './styles';
-import { createHighLevelMap } from '../utils/mapper';
 
 cytoscape.use(dagre);
 
@@ -29,30 +28,6 @@ class DiagramVisualizer {
     });
 
     this.cy.on('click', 'node', onClick);
-  }
-
-  buildCrossLevelsRelations(data, selectedLevel, edgesIds) {
-    // TODO: Implement `edgeIds` checks before creating high level map
-    return Object.entries(createHighLevelMap(data, null, null, selectedLevel))
-      .map(([key, destinations]) => {
-        return destinations
-          .map((target) =>
-            !edgesIds.includes(`${key}_${target}`) && key !== target
-              ? {
-                  data: {
-                    target,
-                    id: `${key}_${target}`,
-                    source: key,
-                    name: target ? 'Target is here' : `KEY ${key}; Target: ${target}`,
-                    // TODO: Add labels
-                    // name: 'Name...'
-                  },
-                }
-              : null,
-          )
-          .filter(Boolean);
-      })
-      .flat();
   }
 
   update(context, selectedPath, selectedLevel) {
@@ -109,8 +84,6 @@ class DiagramVisualizer {
             },
           }))
         : [];
-      // TODO: Implement accumulator. At this point it works like: one key for each call
-      const edgesIds = edges.map((e) => e.data.id);
 
       return acc
         .concat({
@@ -123,9 +96,6 @@ class DiagramVisualizer {
           },
         })
         .concat(edges)
-        .concat(
-          this.buildCrossLevelsRelations(context, this.selectedLevel, edgesIds),
-        )
         .concat(groups);
     }, []);
   }
