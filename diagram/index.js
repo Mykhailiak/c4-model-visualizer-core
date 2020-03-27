@@ -31,7 +31,6 @@ class DiagramVisualizer {
   }
 
   update(context, selectedPath, selectedLevel) {
-    this.selectedLevel = selectedLevel;
     const elements = this.computeElements(context, selectedPath);
 
     this.cy.json({ elements });
