@@ -1,6 +1,6 @@
 const innerLevelKeys = ['container', 'component', 'class'];
 
-export const registerRelastions = (data, path = []) => {
+export const registerRelations = (data, path = []) => {
   let registry = [];
 
   Object.entries(data).forEach(([key, value]) => {
@@ -9,7 +9,7 @@ export const registerRelastions = (data, path = []) => {
 
     if (levelProp) {
       registry = registry.concat(
-        registerRelastions(value[levelProp], computedPath),
+        registerRelations(value[levelProp], computedPath),
       );
     }
 
@@ -48,10 +48,10 @@ const getClosestAvailableNode = (nodesList, availableNodes) =>
   [...nodesList].reverse().find((n) => availableNodes.includes(n));
 
 export const bindRegistriesBySelectedLevel = (context, availableNodes) => {
-  const relationsRegistry = registerRelastions(context);
-  const entitiessRegistry = registerEntities(context);
+  const relationsRegistry = registerRelations(context);
+  const entitiesRegistry = registerEntities(context);
 
-  const bindedRelations = relationsRegistry.reduce((acc, relation) => {
+  const relationsBindedToEntities = relationsRegistry.reduce((acc, relation) => {
     const key = getClosestAvailableNode(relation.parents, availableNodes);
 
     Object.entries(relation.to).forEach(([targetKey, description]) => {
@@ -59,7 +59,7 @@ export const bindRegistriesBySelectedLevel = (context, availableNodes) => {
         key,
         description,
         target: getClosestAvailableNode(
-          entitiessRegistry[targetKey],
+          entitiesRegistry[targetKey],
           availableNodes,
         ),
       });
@@ -68,5 +68,5 @@ export const bindRegistriesBySelectedLevel = (context, availableNodes) => {
     return acc;
   }, []);
 
-  return bindedRelations;
+  return relationsBindedToEntities;
 };
