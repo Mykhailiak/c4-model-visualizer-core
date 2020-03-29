@@ -1,6 +1,7 @@
 import cytoscape from 'cytoscape';
 import dagre from 'cytoscape-dagre';
 import style from './styles';
+import { bindRegistriesBySelectedLevel } from '../utils/registries';
 
 cytoscape.use(dagre);
 
@@ -31,7 +32,10 @@ class DiagramVisualizer {
   }
 
   update(context, selectedPath, selectedLevel) {
-    const elements = this.computeElements(context, selectedPath);
+    const nodes = this.computeElements(context, selectedPath);
+    const availableNodes = nodes.map((n) => n.data.id);
+    const edges = this.computeEdges(context, availableNodes);
+    const elements = nodes.concat(edges);
 
     this.cy.json({ elements });
     this.cy.ready(() => this.cy.layout(this.layout).run());
@@ -42,6 +46,19 @@ class DiagramVisualizer {
     if (selectedLevel) {
       this.cy.fit(`#${selectedLevel}`);
     }
+  }
+
+  computeEdges(context, availableNodes) {
+    const relations = bindRegistriesBySelectedLevel(context, availableNodes);
+
+    return relations.map((r) => ({
+      data: {
+        target: r.target,
+        source: r.key,
+        id: `${r.key}_${r.target}`,
+        name: r.description,
+      },
+    }));
   }
 
   computeElements(
@@ -55,8 +72,6 @@ class DiagramVisualizer {
 
     return keys.reduce((acc, key) => {
       let groups = [];
-      const { relations: { to: targetsSource } = {} } = context[key];
-      const validEdge = targetsSource && true;
       const node = context[key];
       const name = node.name || key;
       const selectionId = `${selectionPath}:${key}`;
@@ -73,16 +88,6 @@ class DiagramVisualizer {
           selectionId,
         );
       }
-      const edges = validEdge
-        ? Object.keys(targetsSource).map((target) => ({
-            data: {
-              target,
-              id: `${key}_${target}`,
-              source: key,
-              name: targetsSource[target],
-            },
-          }))
-        : [];
 
       return acc
         .concat({
@@ -94,7 +99,6 @@ class DiagramVisualizer {
             id: key,
           },
         })
-        .concat(edges)
         .concat(groups);
     }, []);
   }
