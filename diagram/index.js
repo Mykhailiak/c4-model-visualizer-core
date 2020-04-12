@@ -50,15 +50,23 @@ class DiagramVisualizer {
 
   computeEdges(context, availableNodes) {
     const relations = bindRegistriesBySelectedLevel(context, availableNodes);
+    const uniqueRealtions = relations.reduce((acc, r) => {
+      const id = `${r.key}_${r.target}`;
+      const description = acc[id] && acc[id].data.name ? `${r.description}, ${acc[id].data.name}` : r.description;
 
-    return relations.map((r) => ({
-      data: {
-        target: r.target,
-        source: r.key,
-        id: `${r.key}_${r.target}`,
-        name: r.description,
-      },
-    }));
+      acc[id] = {
+        data: {
+          id,
+          target: r.target,
+          source: r.key,
+          name: description,
+        },
+      };
+
+      return acc;
+    }, {});
+
+    return Object.values(uniqueRealtions);
   }
 
   computeElements(
