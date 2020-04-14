@@ -1,3 +1,7 @@
+const basicGray = '#707070';
+const background = '#f0f2f5';
+const lineWidth = 0.2;
+
 export default [
   {
     selector: 'node',
@@ -17,31 +21,38 @@ export default [
   {
     selector: ':parent',
     style: {
-      'background-color': '#fff',
-      'background-opacity': 0.3,
-      'text-valign': 'top',
-      'text-halign': 'center',
+      color: basicGray,
+      'font-size': 4.3,
+      'border-width': lineWidth,
+      'border-color': basicGray,
+      'background-color': background,
+      'background-opacity': 1,
+      'text-valign': 'bottom',
+      'text-halign': 'left',
       'border-style': 'dashed',
-      'text-margin-y': -3,
+      'text-margin-y': -8,
+      'text-margin-x': 40,
+      'text-max-width': 55,
+      'text-wrap': 'ellipsis',
     },
   },
   {
     selector: 'edge',
     style: {
-      width: 0.2,
+      width: lineWidth,
       label: 'data(name)',
       'font-size': 4,
       'font-weight': 'bold',
-      'text-background-color': '#f0f2f5',
+      'text-background-color': background,
       'text-background-opacity': 1,
-      'color': '#707070',
+      'color': basicGray,
       'target-arrow-shape': 'triangle',
       'arrow-scale': 0.4,
-      'line-color': '#707070',
+      'line-color': basicGray,
       'line-style': 'dashed',
       'line-dash-pattern': [4, 4],
       'line-cap': 'square',
-      'target-arrow-color': '#707070',
+      'target-arrow-color': basicGray,
       'curve-style': 'straight',
       'text-max-width': 80,
       'text-wrap': 'wrap',
