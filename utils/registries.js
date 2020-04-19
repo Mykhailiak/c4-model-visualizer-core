@@ -58,6 +58,7 @@ export const bindRegistriesBySelectedLevel = (context, availableNodes) => {
       acc = acc.concat({
         key,
         description,
+        parents: relation.parents,
         target: getClosestAvailableNode(
           entitiesRegistry[targetKey],
           availableNodes,

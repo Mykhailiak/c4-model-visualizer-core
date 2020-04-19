@@ -48,13 +48,32 @@ class DiagramVisualizer {
     }
   }
 
+  classifyEdge(edge, list, skipEdgeDuplication) {
+    return list
+      .filter((item) => item !== edge)
+      .some(
+        (e) =>
+          (edge.key === e.target && edge.target === e.key) ||
+          (e.target === edge.target &&
+            edge.parents.slice(0, -1).includes(e.key) &&
+            !skipEdgeDuplication),
+      )
+      ? ['circular-dep-edge']
+      : [];
+  }
+
   computeEdges(context, availableNodes) {
     const relations = bindRegistriesBySelectedLevel(context, availableNodes);
     const uniqueRealtions = relations.reduce((acc, r) => {
       const id = `${r.key}_${r.target}`;
-      const description = acc[id] && acc[id].data.name ? `${r.description}, ${acc[id].data.name}` : r.description;
+      const mergedRelations = acc[id];
+      const description =
+        mergedRelations && acc[id].data.name
+          ? `${r.description}, ${acc[id].data.name}`
+          : r.description;
 
       acc[id] = {
+        classes: this.classifyEdge(r, relations, mergedRelations),
         data: {
           id,
           target: r.target,

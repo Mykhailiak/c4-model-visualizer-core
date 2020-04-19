@@ -45,7 +45,7 @@ export default [
       'font-weight': 'bold',
       'text-background-color': background,
       'text-background-opacity': 1,
-      'color': basicGray,
+      color: basicGray,
       'target-arrow-shape': 'triangle',
       'arrow-scale': 0.4,
       'line-color': basicGray,
@@ -58,4 +58,10 @@ export default [
       'text-wrap': 'wrap',
     },
   },
+  {
+    selector: 'edge.circular-dep-edge',
+    style: {
+      'curve-style': 'unbundled-bezier',
+    }
+  }
 ];
